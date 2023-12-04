@@ -28,10 +28,6 @@ app.use(
   })
 );
 
-//test request for server in browser/postman
-app.get('/', (req, res) => {
-  res.send('Hello, Express!');
-});
 
 //register page requests
 app.post('/register', async (req, res) => {
@@ -89,6 +85,21 @@ app.get('/login', async (req, res) => {
 })
 
 //manage page requests
+app.get('/manage'), async (req, res) => {
+  const { id } = req.query;
+  knex('item')
+    .select('*')
+    .where('id', id)
+    .then(itemObj => {
+      const newItemArray = {
+        itemname: itemname,
+        description: description,
+        quantity: quantity
+    }
+    })
+    .then(data => res.json(data))
+}
+
 app.post('/manage', async (req, res) => {
   const { id, userid, itemname, description, quantity } = req.query;
   knex('item')
