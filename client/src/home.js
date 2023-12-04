@@ -1,9 +1,10 @@
-import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { useState, useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { invContext } from "./App";
 import './index.css';
 
 export const Home = () => {
+  const { setLoggedIn, setUserData } = useContext(invContext);
 
   return (
     <>
