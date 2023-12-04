@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { invContext } from "./App";
 import './index.css';
 
-export const Login = () => {
+export const Viewall = () => {
 
   return (
     <>
