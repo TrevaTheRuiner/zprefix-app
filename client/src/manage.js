@@ -6,9 +6,6 @@ import './index.css';
 export const Manage = () => {
   const { loggedIn, userData } = useContext(invContext);
   const [currentInv, setCurrentInv] = useState([])
-  const [currItem, setCurrItem] = useState("")
-  const [currDesc, setCurrDesc] = useState("")
-  const [currQuan, setCurrQuan] = useState("")
   const [itemData, setItemData] = useState({
     id: '',
     userid: '',
@@ -19,52 +16,78 @@ export const Manage = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     setItemData( {
-      id: '',
       userid: userData.id,
-      itemname: currItem,
-      description: currDesc,
-      quantity: currQuan
     });
     postItemData();
     console.log(itemData)
   }
 
   const handleItemInput = (input) => {
-    setCurrItem(input.target.value)
+    setItemData({ ...itemData, itemname: input.target.value})
   }
 
   const handleDescInput = (input) => {
-    setCurrDesc(input.target.value)
+    setItemData({ ...itemData, description: input.target.value})
   }
 
   const handleQuanInput = (input) => {
-    setCurrQuan(input.target.value)
+    setItemData({ ...itemData, quantity: input.target.value})
   }
 
 
 const postItemData = () => {
-  const queryParams = `?itemname=${encodeURIComponent(itemData.itemname)}&description=${encodeURIComponent(itemData.description)}&quantity=${encodeURIComponent(itemData.quantity)}`;
-  fetch(`http://localhost:8080/manage${queryParams}`,{
+  const requestBody = {
+    userid: userData.id,
+    itemname: itemData.itemname,
+    description: itemData.description,
+    quantity: itemData.quantity,
+  };
+  fetch('http://localhost:8080/manage', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestBody),
   })
-    .then(res => res.json())
-    .then(message => alert('item added'))
-    navigate('/manage')
-  }
+    .then((res) => res.json())
+    .then((message) => {
+      alert('item added');
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
+};
+
+const handleDeleteItem = (itemId) => {
+  fetch(`http://localhost:8080/manage/${itemId}`, {
+    method: 'DELETE',
+  })
+    .then((res) => res.json())
+    .then((message) => {
+      alert('Item deleted');
+      handleRefreshInventory();
+    })
+    .catch((error) => {
+      console.error('Error deleting item:', error);
+    });
+};
+
+const handleRefreshInventory = () => {
+  const queryParams = `?userid=${encodeURIComponent(userData.id)}`;
+  fetch(`http://localhost:8080/manage${queryParams}`)
+    .then((res) => res.json())
+    .then((data) => setCurrentInv(data))
+    .catch((error) => {
+      console.error('Error refreshing inventory:', error);
+    });
+};
 
 useEffect(() => {
-  const getCurrentInv = async() => {
-    const queryParams = `?userid=${encodeURIComponent(userData.id)}`
-    fetch(`http://localhost:8080/manage${queryParams}`)
-    .then(res => res.json())
-    .then(data => setCurrentInv(data))
-    .then(console.log(currentInv))
-  };
-  getCurrentInv();
-}, [])
+  handleRefreshInventory();
+}, [userData.id]);
 
 
   return (
@@ -82,40 +105,56 @@ useEffect(() => {
               value={itemData.itemname} placeholder='Item Name' onChange={handleItemInput}>
               </input>
             </label>
-
             <label>
               <a className='label'>Description</a>
               <input className='input-field' type='text' name='description'
               value={itemData.description} placeholder='Describe the item in 100char or less' onChange={handleDescInput}>
               </input>
             </label>
-
             <label>
               <a className='label'>Quantity</a>
               <input className='input-field' type='number' name='quantity'
               value={itemData.quantity} placeholder='Quanitity of items added' onChange={handleQuanInput}>
               </input>
             </label>
-
-            <button type="submit" className='button'>Add to inventory</button>
+            <button type="submit" className='button' onClick={handleSubmit}>Add to inventory</button>
           </form>
         </div>
       </div>
       <div>
-        <h1>Current Inventory</h1>
-        <button type="button" className='button'>Show /Refresh Full Inventory</button>
-        <div>
-          {currentInv ?
-          <ul>
-            {currentInv.map((item, index) => (
-              <div key={index} className='invitem'>
-                {item.itemname}
-              </div>
-            ))}
-          </ul>
-          : <></>}
-        </div>
-      </div>
+  <h1>Current Inventory</h1>
+  <button type="button" className="button" onClick={handleRefreshInventory}>
+            Show / Refresh Full Inventory
+          </button>
+  <div>
+    {currentInv ? (
+      <table>
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Description</th>
+            <th>Quantity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentInv.map((item, index) => (
+            <tr key={index}>
+              <td>{item.itemname}</td>
+              <td>{item.description}</td>
+              <td>{item.quantity}</td>
+              <td>
+                  <button type="button" className="button"
+                    onClick={() => handleDeleteItem(item.id)}>
+                    Remove from Inventory</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    ) : (
+      <p>You ran out!! Go buy supplies dude</p>
+    )}
+    </div>
+  </div>
     </div>
     : <></>}
     </>

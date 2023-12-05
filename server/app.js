@@ -85,49 +85,73 @@ app.get('/login', async (req, res) => {
 })
 
 //manage page requests
-app.get('/manage'), async (req, res) => {
-  const { id } = req.query;
+app.get('/manage', async (req, res) => {
+  const { userid } = req.query;
   knex('item')
     .select('*')
-    .where('id', id)
-    .then(itemObj => {
-      const newItemArray = {
-        itemname: itemname,
-        description: description,
-        quantity: quantity
-    }
-    })
-    .then(data => res.json(data))
-}
+    .where('userid', userid)
+    .then((data) => res.json(data))
+    .catch((error) => res.status(500).json({ error: error.message }));
+});
 
 app.post('/manage', async (req, res) => {
-  const { id, userid, itemname, description, quantity } = req.query;
+  console.log('Request Body:', req.body);
+  const { userid, itemname, description, quantity } = req.body;
+
+  const maxIdResult = await knex.raw('SELECT MAX(id) as maxId FROM item');
+  const maxId = maxIdResult.rows[0].maxid || 0
+
   knex('item')
     .select('id')
     .then(newItem => {
       const newItemData = {
-        id: newItem.length+1,
+        id: maxId + 1,
         userid: userid,
         itemname: itemname,
         description: description,
         quantity: quantity,
       };
       knex('item')
-      .insert(newItemData)
-      .then(x => {
-        knex('item')
-        .select('*')
-        .where('itemname', itemname)
-        .then(item_row => {
-          res.json(item_row)
+        .insert(newItemData)
+        .then(() => {
+          knex('item')
+            .select('*')
+            .where('id', newItemData.id).first()
+            .then((item_row) => {
+              res.json(item_row);
+            })
+            .catch((error) => {
+              console.error('Error selecting item from the database:', error);
+              res.status(500).json({
+                message: 'Internal Server Error',
+                error: error.message,
+              });
+            });
         })
-      })
-      .catch((error) => {
-        res.status(404).json({
-          message: 'The POST failed. Err 404'
-        })
-      })
+        .catch((error) => {
+          console.error('Error inserting into the database:', error);
+          res.status(500).json({
+            message: 'Internal Server Error',
+            error: error.message,
+          });
+        });
     })
+    .catch((error) => {
+      console.error('Error selecting id from the database:', error);
+      res.status(500).json({
+        message: 'Internal Server Error',
+        error: error.message,
+      });
+    });
+});
+
+app.delete('/manage/:itemId', async (req, res) => {
+  const itemId = req.params.itemId;
+  knex('item')
+    .where('id', itemId)
+    .del()
+    .then(() => res.json({ message: 'Item deleted successfully' }))
+    .catch((error) => res.status(500).json({ error: error.message }));
 });
 
 app.listen(port, () => {
