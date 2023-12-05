@@ -8,21 +8,32 @@ export const Manage = () => {
   const [currentInv, setCurrentInv] = useState([])
   const [itemData, setItemData] = useState({
     id: '',
-    userid: '',
+    userid: userData.id,
     itemname: '',
     description: '',
     quantity: ''
   });
+  const [editMode, setEditMode] = useState(false);
+  const [editedItem, setEditedItem] = useState(null);
 
   const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    setItemData( {
-      userid: userData.id,
-    });
+    if (editMode) {
+      setEditMode(false);
+      setEditedItem(null);
+    } else {
+      setItemData({
+        id: '',
+        userid: userData.id,
+        itemname: '',
+        description: '',
+        quantity: ''
+      });
     postItemData();
     console.log(itemData)
+    }
   }
 
   const handleItemInput = (input) => {
@@ -85,6 +96,18 @@ const handleRefreshInventory = () => {
     });
 };
 
+const handleEditItem = (item) => {
+  setItemData({
+    id: item.id,
+    userid: item.userid,
+    itemname: item.itemname,
+    description: item.description,
+    quantity: item.quantity,
+  });
+  setEditMode(true);
+  setEditedItem(item.id);
+};
+
 useEffect(() => {
   handleRefreshInventory();
 }, [userData.id]);
@@ -102,22 +125,22 @@ useEffect(() => {
             <label>
               <a className='label'>Item Name</a>
               <input className='input-field' type='text' name='itemname'
-              value={itemData.itemname} placeholder='Item Name' onChange={handleItemInput}>
+              value={itemData.itemname} placeholder='Item Name' onChange={handleItemInput} disabled={editMode}>
               </input>
             </label>
             <label>
               <a className='label'>Description</a>
               <input className='input-field' type='text' name='description'
-              value={itemData.description} placeholder='Describe the item in 100char or less' onChange={handleDescInput}>
+              value={itemData.description} placeholder='Describe the item in 100char or less' onChange={handleDescInput} disabled={editMode} >
               </input>
             </label>
             <label>
               <a className='label'>Quantity</a>
               <input className='input-field' type='number' name='quantity'
-              value={itemData.quantity} placeholder='Quanitity of items added' onChange={handleQuanInput}>
+              value={itemData.quantity} placeholder='Quanitity of items added' onChange={handleQuanInput} disabled={editMode}>
               </input>
             </label>
-            <button type="submit" className='button' onClick={handleSubmit}>Add to inventory</button>
+            <button type="submit" className='button'>{editMode ? 'Update item' : 'Add to Inventory'}</button>
           </form>
         </div>
       </div>
@@ -143,9 +166,13 @@ useEffect(() => {
               <td>{item.description}</td>
               <td>{item.quantity}</td>
               <td>
-                  <button type="button" className="button"
-                    onClick={() => handleDeleteItem(item.id)}>
-                    Remove from Inventory</button></td>
+                <button type="button" className="button"
+                  onClick={() => handleDeleteItem(item.id)}>
+                  Remove from Inventory</button>
+                <button type='button' className='button'
+                  onClick={() => handleEditItem(item)}>
+                  Edit</button>
+              </td>
             </tr>
           ))}
         </tbody>

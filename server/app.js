@@ -88,7 +88,9 @@ app.get('/login', async (req, res) => {
 app.get('/manage', async (req, res) => {
   const { userid } = req.query;
   knex('item')
-    .select('*')
+  .select('id', 'userid', 'itemname',
+    knex.raw('CASE WHEN LENGTH(description) > 100 THEN SUBSTRING(description FROM 1 FOR 100) || \'...\' ELSE description END AS description'),
+    'quantity')
     .where('userid', userid)
     .then((data) => res.json(data))
     .catch((error) => res.status(500).json({ error: error.message }));
@@ -152,6 +154,27 @@ app.delete('/manage/:itemId', async (req, res) => {
     .del()
     .then(() => res.json({ message: 'Item deleted successfully' }))
     .catch((error) => res.status(500).json({ error: error.message }));
+});
+
+//viewall page requests
+app.get('/userids', async (req, res) => {
+  knex('item')
+    .pluck('userid')
+    .then((userIDs) => res.json(userIDs))
+    .catch((error) => res.status(500).json({ error: 'Internal Server Error' }));
+});
+
+app.get('/viewall', async (req, res) => {
+  const { userid } = req.query;
+  let query = knex('item').select('id', 'itemname', knex.raw('LEFT(description, 100) AS truncated_description'), 'quantity');
+  if (userid) {
+    query = query.where('userid', userid);
+  } try {
+    const data = await query;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.listen(port, () => {
