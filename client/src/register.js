@@ -51,28 +51,24 @@ const postRegData = () => {
             value={regData.firstname} placeholder='Your First Name' onChange={handleInputChange}>
             </input>
           </label>
-
           <label>
             <a className='label'>Last Name</a>
             <input className='input-field' type='text' name='lastname'
             value={regData.lastname} placeholder='Your Last Name' onChange={handleInputChange}>
             </input>
           </label>
-
           <label>
             <a className='label'>Username</a>
             <input className='input-field' type='text' name='username'
             value={regData.username} placeholder='Your username' onChange={handleInputChange}>
             </input>
           </label>
-
           <label>
             <a className='label'>Password</a>
             <input className='input-field' type='text' name='password'
             value={regData.password} placeholder='create a password' onChange={handleInputChange}>
             </input>
           </label>
-
           <button type="submit" className='button'>Register</button>
         </form>
       </div>

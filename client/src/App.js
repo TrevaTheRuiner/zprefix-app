@@ -14,8 +14,8 @@ const [userData, setUserData] = useState({});
 
   return (
     <invContext.Provider value={{ userData, setUserData, loggedIn, setLoggedIn }}>
+      <h2 className='headerText'>Inventory Manager Suite</h2>
       <div className='navbar'>
-        <div>Inventory Manager</div>
         <Link to='/home' className='navbarLink'>Home</Link>
         <Link to='/viewall' className='navbarLink'>View All Inv</Link>
         <Link to='/register' className='navbarLink'>Register</Link>

@@ -45,8 +45,8 @@ export const Viewall = () => {
   return (
   <>
 <h1>Current Inventory</h1>
-  <label htmlFor="userIdDropdown">Filter by Manager ID No. :</label>
-  <select id="userIdDropdown" value={selectedUserId || ''} onChange={handleUserChange}>
+  <label className="h1">Filter by Manager ID No. :</label>
+  <select className="userIdDropdown" value={selectedUserId || ''} onChange={handleUserChange}>
       <option value="">All Users</option>
       {Array.isArray(allUserIds) && allUserIds.length > 0 ? (
         allUserIds.map((userId) => (
@@ -62,17 +62,17 @@ export const Viewall = () => {
       <table>
         <thead>
           <tr>
-            <th>Item Name</th>
-            <th>Description</th>
-            <th>Quantity</th>
+            <th className='tablebox'>Item Name</th>
+            <th className='tablebox'>Description</th>
+            <th className='tablebox'>Quantity</th>
           </tr>
         </thead>
         <tbody>
           {currentInv.map((item, index) => (
             <tr key={index}>
-              <td>{item.itemname}</td>
-              <td>{item.description}</td>
-              <td>{item.quantity}</td>
+              <td className='tablebox'>{item.itemname}</td>
+              <td className='tablebox'>{item.description}</td>
+              <td className='tablebox'>{item.quantity}</td>
             </tr>
           ))}
         </tbody>

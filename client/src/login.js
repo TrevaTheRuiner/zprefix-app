@@ -43,14 +43,13 @@ export const Login = () => {
     <>
     <div className='loginpage'>
       <h1>Login</h1><br></br>
-      <div>
-          <form onSubmit={handleSubmit} className="login-form">
+      <div className='login-form'>
+          <form onSubmit={handleSubmit}>
             <label>
               <a className="label">Username</a>
               <input className="input-field" type="text" name="username" value={loginData.username} onChange={handleInputChange}
               placeholder='username'/>
             </label>
-
             <label>
               <a className="label">Password</a>
               <input className="input-field" type="password" name="password" value={loginData.password} onChange={handleInputChange}
@@ -61,7 +60,6 @@ export const Login = () => {
             </div>
           </form>
           </div>
-
     </div>
     </>
   );

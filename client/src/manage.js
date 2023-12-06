@@ -154,18 +154,18 @@ useEffect(() => {
       <table>
         <thead>
           <tr>
-            <th>Item Name</th>
-            <th>Description</th>
-            <th>Quantity</th>
+            <th className='tablebox'>Item Name</th>
+            <th className='tablebox'>Description</th>
+            <th className='tablebox'>Quantity</th>
           </tr>
         </thead>
         <tbody>
           {currentInv.map((item, index) => (
             <tr key={index}>
-              <td>{item.itemname}</td>
-              <td>{item.description}</td>
-              <td>{item.quantity}</td>
-              <td>
+              <td className='tablebox'>{item.itemname}</td>
+              <td className='tablebox'>{item.description}</td>
+              <td className='tablebox'>{item.quantity}</td>
+              <td className='tablebox'>
                 <button type="button" className="button"
                   onClick={() => handleDeleteItem(item.id)}>
                   Remove from Inventory</button>
