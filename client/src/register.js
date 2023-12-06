@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import bcrypt from 'bcryptjs';
 import { Link, useNavigate } from "react-router-dom";
 import { invContext } from "./App";
 import './index.css';
@@ -13,8 +14,8 @@ export const Register = () => {
 
   const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    setRegData();
+  const handleSubmit = (yep) => {
+    yep.preventDefault();
     postRegData();
     console.log(regData)
   }
@@ -27,11 +28,20 @@ export const Register = () => {
     });
   };
 
-const postRegData = () => {
-  const queryParams = `?firstname=${encodeURIComponent(regData.firstname)}&lastname=${encodeURIComponent(regData.lastname)}&username=${encodeURIComponent(regData.username)}&password=${encodeURIComponent(regData.password)}`;
-  fetch(`http://localhost:8080/register${queryParams}`,{
+const postRegData = async () => {
+  const hashedPassword = await bcrypt.hash(regData.password, 10);
+  const requestBody = {
+    firstname: regData.firstname,
+    lastname: regData.lastname,
+    username: regData.username,
+    password: hashedPassword,
+  };
+  const response = await fetch('http://localhost:8080/register', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestBody),
   })
     .then(res => res.json())
     .then(navigate('/login'))

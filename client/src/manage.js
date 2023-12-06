@@ -108,6 +108,23 @@ const handleEditItem = (item) => {
   setEditedItem(item.id);
 };
 
+const handleUpdateItem = () => {
+  setEditMode(false);
+  setEditedItem(null);
+};
+
+const handleCancelEdit = () => {
+  setItemData({
+    id: '',
+    userid: userData.id,
+    itemname: '',
+    description: '',
+    quantity: ''
+  });
+  setEditMode(false);
+  setEditedItem(null);
+};
+
 useEffect(() => {
   handleRefreshInventory();
 }, [userData.id]);
@@ -125,19 +142,19 @@ useEffect(() => {
             <label>
               <a className='label'>Item Name</a>
               <input className='input-field' type='text' name='itemname'
-              value={itemData.itemname} placeholder='Item Name' onChange={handleItemInput} disabled={editMode}>
+              value={itemData.itemname} placeholder='Item Name' onChange={handleItemInput} disabled={!editMode}>
               </input>
             </label>
             <label>
               <a className='label'>Description</a>
               <input className='input-field' type='text' name='description'
-              value={itemData.description} placeholder='Describe the item in 100char or less' onChange={handleDescInput} disabled={editMode} >
+              value={itemData.description} placeholder='Describe the item in 100char or less' onChange={handleDescInput} disabled={!editMode} >
               </input>
             </label>
             <label>
               <a className='label'>Quantity</a>
               <input className='input-field' type='number' name='quantity'
-              value={itemData.quantity} placeholder='Quanitity of items added' onChange={handleQuanInput} disabled={editMode}>
+              value={itemData.quantity} placeholder='Quanitity of items added' onChange={handleQuanInput} disabled={!editMode}>
               </input>
             </label>
             <button type="submit" className='button'>{editMode ? 'Update item' : 'Add to Inventory'}</button>
@@ -160,21 +177,40 @@ useEffect(() => {
           </tr>
         </thead>
         <tbody>
-          {currentInv.map((item, index) => (
-            <tr key={index}>
-              <td className='tablebox'>{item.itemname}</td>
-              <td className='tablebox'>{item.description}</td>
-              <td className='tablebox'>{item.quantity}</td>
-              <td className='tablebox'>
-                <button type="button" className="button"
-                  onClick={() => handleDeleteItem(item.id)}>
-                  Remove from Inventory</button>
-                <button type='button' className='button'
-                  onClick={() => handleEditItem(item)}>
-                  Edit</button>
-              </td>
-            </tr>
-          ))}
+        {currentInv.map((item, index) => (
+          <tr key={index}>
+            <td className='tablebox'>{editMode && editedItem === item.id ? (
+              <input type='text' value={itemData.itemname} onChange={handleItemInput}/>) : (item.itemname)}
+            </td>
+            <td className='tablebox'>{editMode && editedItem === item.id ? (
+              <input type='text'value={itemData.description} onChange={handleDescInput}/>) : (item.description)}
+            </td>
+            <td className='tablebox'>{editMode && editedItem === item.id ? (
+            <input type='number'value={itemData.quantity}onChange={handleQuanInput}/>) : (item.quantity)}
+            </td>
+            <td className='tablebox'>
+              {editMode && editedItem === item.id ? (
+                <>
+                  <button type="button" className="button" onClick={handleUpdateItem}>
+                    Update
+                  </button>
+                  <button type="button" className="button" onClick={handleCancelEdit}>
+                    Cancel
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button type="button" className="button" onClick={() => handleDeleteItem(item.id)}>
+                    Remove from Inventory
+                  </button>
+                  <button type='button' className='button' onClick={() => handleEditItem(item)}>
+                    Edit
+                  </button>
+                </>
+              )}
+            </td>
+          </tr>
+        ))}
         </tbody>
       </table>
     ) : (

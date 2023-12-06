@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import bcrypt from 'bcryptjs';
 import { Link, useNavigate } from "react-router-dom";
 import { invContext } from "./App";
 import './index.css';
@@ -9,6 +10,7 @@ export const Login = () => {
     username: '',
     password: ''
   });
+
   const navigate = useNavigate();
 
   const handleInputChange = (input) => {
@@ -19,14 +21,22 @@ export const Login = () => {
     });
   };
 
+  // const hashPassword = async (password) => {
+  //   const salt = await bcrypt.genSalt(10);
+  //   const hashedPassword = await bcrypt.hash(password, salt);
+  //   return hashedPassword;
+  // }
+
   const handleSubmit = (input) => {
     input.preventDefault();
     getUserData();
   }
 
+
   const getUserData = async () => {
+    // const hashedPassword = await hashPassword(loginData.password);
     const queryParams = `?username=${encodeURIComponent(loginData.username)}&password=${encodeURIComponent(loginData.password)}`;
-    fetch(`http://localhost:8080/login${queryParams}`)
+    await fetch(`http://localhost:8080/login${queryParams}`)
     .then(res => res.json())
     .then(userdata => {
       if (userdata.user) {

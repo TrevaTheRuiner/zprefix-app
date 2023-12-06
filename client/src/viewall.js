@@ -45,7 +45,7 @@ export const Viewall = () => {
   return (
   <>
 <h1>Current Inventory</h1>
-  <label className="h1">Filter by Manager ID No. :</label>
+  <label className="">Filter by Manager ID No. :</label>
   <select className="userIdDropdown" value={selectedUserId || ''} onChange={handleUserChange}>
       <option value="">All Users</option>
       {Array.isArray(allUserIds) && allUserIds.length > 0 ? (

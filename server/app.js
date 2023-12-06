@@ -3,10 +3,11 @@ const cors = require("cors");
 const cookieParser = require('cookie-parser')
 const session = require('express-session');
 const bodyParser = require('body-parser');
+const bcrypt = require('bcrypt');
 const knex = require('knex')(require('./knexfile.js')[process.env.NODE_ENV||'development']);
 const knexConfig = require('./knexfile');
 
-const port = process.env.port || 8080;
+const port = process.env.PORT || 8080;
 const db = knex(knexConfig);
 
 const app = express();
@@ -28,6 +29,12 @@ app.use(
   })
 );
 
+const saltRounds = 10;
+
+const hashPassword = async (password) => {
+  const salt = await bcrypt.genSalt(saltRounds);
+  return await bcrypt.hash(password, salt);
+};
 
 //register page requests
 app.post('/register', async (req, res) => {
